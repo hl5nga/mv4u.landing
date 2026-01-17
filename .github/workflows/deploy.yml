@@ -1,0 +1,66 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64
+
+      - name: Build Docker image
+        run: |
+          docker buildx build \
+            --platform linux/amd64 \
+            --tag mv4u-landing:latest \
+            --output type=docker \
+            .
+
+      - name: Save Docker image to tar
+        run: docker save mv4u-landing:latest -o mv4u-landing.tar
+
+      - name: Copy image to server and deploy
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          source: "mv4u-landing.tar"
+          target: "/tmp/"
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            # Load Docker image
+            docker load -i /tmp/mv4u-landing.tar
+            
+            # Stop and remove existing container
+            docker stop mv4u-landing || true
+            docker rm mv4u-landing || true
+            
+            # Run new container
+            docker run -d \
+              --name mv4u-landing \
+              --restart unless-stopped \
+              -p 8080:80 \
+              mv4u-landing:latest
+            
+            # Clean up
+            rm /tmp/mv4u-landing.tar
