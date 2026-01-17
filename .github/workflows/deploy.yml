@@ -25,10 +25,14 @@ jobs:
             --platform linux/amd64 \
             --tag mv4u-landing:latest \
             --output type=docker \
+            --load \
             .
 
       - name: Save Docker image to tar
-        run: docker save mv4u-landing:latest -o mv4u-landing.tar
+        run: |
+          docker save mv4u-landing:latest -o mv4u-landing.tar
+          chmod 644 mv4u-landing.tar
+          ls -lh mv4u-landing.tar
 
       - name: Copy image to server and deploy
         uses: appleboy/scp-action@v0.1.7
@@ -39,6 +43,7 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT || 22 }}
           source: "mv4u-landing.tar"
           target: "/tmp/"
+          overwrite: true
 
       - name: Deploy on server
         uses: appleboy/ssh-action@v1.0.3
