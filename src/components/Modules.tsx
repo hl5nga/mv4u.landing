@@ -1,4 +1,4 @@
-import { Database, ShoppingCart, Route } from 'lucide-react';
+import { Database, ShoppingCart, Route, Warehouse, Ship } from 'lucide-react';
 
 const modules = [
   {
@@ -39,6 +39,32 @@ const modules = [
       'Delivery analytics'
     ],
     color: 'teal'
+  },
+  {
+    icon: Warehouse,
+    name: 'Stock Module',
+    tagline: 'Master Inventory Control',
+    description: 'Manage your inventory with precision. Real-time stock tracking, warehouse operations, and inventory optimization for maximum efficiency.',
+    features: [
+      'Real-time stock monitoring',
+      'Warehouse management',
+      'Inventory optimization',
+      'Stock level analytics'
+    ],
+    color: 'purple'
+  },
+  {
+    icon: Ship,
+    name: 'Freight Module',
+    tagline: 'Streamline Forwarding',
+    description: 'Simplify your freight forwarding operations. Manage shipments, track cargo, and coordinate with carriers seamlessly across global networks.',
+    features: [
+      'Freight booking & management',
+      'Cargo tracking & visibility',
+      'Carrier coordination',
+      'International shipping support'
+    ],
+    color: 'orange'
   }
 ];
 
@@ -51,20 +77,22 @@ export default function Modules() {
             M4 Series Modules
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Three Powerful Modules, One Complete Solution
+            Powerful Modules, One Complete Solution
           </h2>
           <p className="text-xl text-slate-400 max-w-3xl mx-auto">
             Launch your digital transformation journey with our core modules designed for immediate impact
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 max-w-7xl mx-auto">
           {modules.map((module, index) => {
             const Icon = module.icon;
             const colorClasses = {
               blue: 'bg-blue-600 text-white border-blue-600',
               cyan: 'bg-cyan-600 text-white border-cyan-600',
-              teal: 'bg-teal-600 text-white border-teal-600'
+              teal: 'bg-teal-600 text-white border-teal-600',
+              purple: 'bg-purple-600 text-white border-purple-600',
+              orange: 'bg-orange-600 text-white border-orange-600'
             };
 
             return (
