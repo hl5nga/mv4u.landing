@@ -69,3 +69,23 @@ jobs:
             
             # Clean up
             rm /tmp/mv4u-landing.tar
+
+      - name: Telegram notification
+        if: always()
+        uses: appleboy/telegram-action@master
+        with:
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          format: markdown
+          message: |
+            *🚀 Docker Deploy ${{ job.status == 'success' && '✅ 성공' || '❌ 실패' }}*
+
+            📋 *Workflow:* `${{ github.workflow }}`
+            📦 *App:* `lukplay`
+            🏷️ *Tag:* `${{ env.TAG }}`
+            🌿 *Branch:* `${{ github.ref_name }}`
+            💬 *Commit:* `${{ env.TAG }}`
+            👤 *Actor:* ${{ github.actor }}
+            📅 *Time:* ${{ github.event.head_commit.timestamp || github.event.pusher.created_at }}
+
+            🔗 *Repo:* ${{ github.repository }}
